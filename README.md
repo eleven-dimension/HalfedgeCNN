@@ -1,1 +1,1 @@
-"# HalfedgeCNN" 
+# HalfedgeCNN
