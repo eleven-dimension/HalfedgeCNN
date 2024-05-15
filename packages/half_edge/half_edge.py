@@ -10,7 +10,7 @@ class HalfEdge:
         self.vertex = None
         self.edge = None
 
-        self.features = np.zeros(5, dtype=float)
+        self.features = np.zeros(5, dtype=np.float32)
 
 
     def N(self):
