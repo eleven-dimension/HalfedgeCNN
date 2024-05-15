@@ -63,7 +63,23 @@ class HalfEdge:
         angle1 = HalfEdge.angle_between(self.vertex.pos, self.N().vertex.pos, self.O().vertex.pos)
         angle2 = HalfEdge.angle_between(self.vertex.pos, self.ON().vertex.pos, self.O().vertex.pos)
         return angle1, angle2
+    
 
+    @staticmethod
+    def height_to_base_ratio(p1, p2, p3):
+        v1 = p1 - p2
+        v2 = p3 - p2
+        area = np.linalg.norm(np.cross(v1, v2))
+        base = np.linalg.norm(p3 - p1)
+        ratio = area / base ** 2
+        return ratio
+
+
+    def height_to_base_ratios(self):
+        ratio1 = HalfEdge.height_to_base_ratio(self.vertex.pos, self.N().vertex.pos, self.O().vertex.pos)
+        ratio2 = HalfEdge.height_to_base_ratio(self.vertex.pos, self.ON().vertex.pos, self.O().vertex.pos)
+        return ratio1, ratio2
+    
     
     def __str__(self):
         twin_id = self.twin.id if self.twin else None
