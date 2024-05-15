@@ -1,5 +1,5 @@
 import numpy as np
-from packages.half_edge.half_edge import Edge, Face, HalfEdge, Vertex
+from packages.half_edge.half_edge import *
 
 class Mesh:
     def __init__(self):
@@ -138,6 +138,10 @@ class Mesh:
                 he.edge = edge
                 if he.twin:
                     he.twin.edge = edge
+
+        # Calculating input features
+        for he in self.half_edges:
+            he.calc_input_features()
 
 
     def convert_mesh_to_obj_format(self):

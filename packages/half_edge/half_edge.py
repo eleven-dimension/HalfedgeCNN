@@ -10,6 +10,8 @@ class HalfEdge:
         self.vertex = None
         self.edge = None
 
+        self.features = np.zeros(5, dtype=float)
+
 
     def N(self):
         return self.next
@@ -79,6 +81,12 @@ class HalfEdge:
         ratio1 = HalfEdge.height_to_base_ratio(self.vertex.pos, self.N().vertex.pos, self.O().vertex.pos)
         ratio2 = HalfEdge.height_to_base_ratio(self.vertex.pos, self.ON().vertex.pos, self.O().vertex.pos)
         return ratio1, ratio2
+    
+
+    def calc_input_features(self):
+        self.features[0] = self.dihedral_angle()
+        self.features[1], self.features[2] = self.opposite_angles()
+        self.features[3], self.features[4] = self.height_to_base_ratios()
     
     
     def __str__(self):
