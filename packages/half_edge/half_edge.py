@@ -37,6 +37,17 @@ class HalfEdge:
 
     def OPO(self):
         return self.twin.next.next.twin if self.twin and self.twin.next and self.twin.next.next else None
+    
+    def dihedral_angle(self):
+        v1 = self.vertex.pos - self.O().vertex.pos
+        v2 = self.N().vertex.pos - self.vertex.pos
+        v3 = self.ON().vertex.pos - self.O().vertex.pos
+
+        normal1 = np.cross(v1, v2)
+        normal2 = np.cross(-v1, v3)
+
+        cosine_angle = np.dot(normal1, normal2) / (np.linalg.norm(normal1) * np.linalg.norm(normal2))
+        return cosine_angle
 
     
     def __str__(self):
