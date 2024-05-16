@@ -2,6 +2,10 @@ from packages.half_edge.neighbor import *
 from packages.half_edge.mesh import *
 from packages.network.layer import *
 
+def half_edges_to_tensor(half_edges):
+    features = [torch.from_numpy(he.features) for he in half_edges]
+    features_tensor = torch.stack(features)
+    return features_tensor
 
 if __name__ == "__main__":
     mesh = Mesh()
@@ -12,10 +16,10 @@ if __name__ == "__main__":
         mesh.print_mesh_info()
 
         halfEdgeCNNLayer = HalfEdgeConv(
-            in_channels=3, out_channels=7, neighbor_type='A'
+            in_channels=5, out_channels=7, neighbor_type='A'
         )
 
-        x = torch.randn((18, 3))
+        x = half_edges_to_tensor(mesh.half_edges)
 
         with torch.no_grad():
             out = halfEdgeCNNLayer(x, mesh.half_edges)

@@ -5,7 +5,14 @@ import numpy as np
 
 from packages.half_edge.neighbor import *
 from packages.half_edge.mesh import *
-from packages.network.model import *
+from packages.network.mesh_based_model import *
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def half_edges_to_tensor(half_edges):
@@ -15,13 +22,15 @@ def half_edges_to_tensor(half_edges):
 
 
 if __name__ == "__main__":
+    set_seed(0)
+
     mesh = Mesh()
     filepath = './packages/obj/pyramid.obj'
 
     if mesh.load_obj(filepath):
         mesh.convert_obj_format_to_mesh()
 
-        model = HalfEdgeCNNModel(
+        model = HalfEdgeCNNMeshModel(
             in_channel_num=5, mid_channel_num=32, pool_output_size=4, category_num=2, neighbor_type_list=['A', 'E', 'H']
         )
 
@@ -58,3 +67,15 @@ if __name__ == "__main__":
             outputs = model(x, mesh.half_edges)
             probabilities = F.softmax(outputs, dim=0)
             print(probabilities)
+
+'''
+Before training:
+tensor([0.5054, 0.4946])
+Epoch 1, Loss: 0.6824349761009216
+Epoch 11, Loss: 0.0
+Epoch 21, Loss: 0.0
+Epoch 31, Loss: 0.0
+Epoch 41, Loss: 0.0
+After training:
+tensor([1., 0.])
+'''

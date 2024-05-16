@@ -20,6 +20,7 @@ class HalfEdgeConv(nn.Module):
     def forward(self, x, half_edges):
         # x is a [N, in_channels] tensor, where N is the number of nodes.
         # half_edges is a list of HalfEdge objects.
+        # print(x)
 
         # Create an empty tensor to store the output features.
         out = torch.empty((x.shape[0], self.linear_layer.out_features), device=x.device)
@@ -28,8 +29,17 @@ class HalfEdgeConv(nn.Module):
         for i, he in enumerate(half_edges):
             # Get the features of the node and its neighbors.
             neighbors = self.neighbor_func(he)
-            neighbor_features = torch.cat([x[neighbor.vertex.id] for neighbor in neighbors], dim=-1)
 
+            # if i == 0:
+            #     print("--------forward--------")
+            #     for neighbor in neighbors:
+            #         print(neighbor)
+            #         print(neighbor.id)
+
+            neighbor_features = torch.cat([x[neighbor.id] for neighbor in neighbors], dim=-1)
+
+            # if i == 0:
+            #     print(neighbor_features)
             # Pass them through the linear layer.
             out[i] = self.linear_layer(neighbor_features)
 

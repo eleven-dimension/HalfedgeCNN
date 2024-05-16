@@ -1,7 +1,7 @@
 from packages.half_edge.neighbor import *
 from packages.half_edge.mesh import *
 from packages.network.layer import *
-from packages.network.model import *
+from packages.network.mesh_based_model import *
 
 
 if __name__ == "__main__":
@@ -12,7 +12,7 @@ if __name__ == "__main__":
         mesh.convert_obj_format_to_mesh()
         mesh.print_mesh_info()
 
-        model = HalfEdgeCNNModel(
+        model = HalfEdgeCNNMeshModel(
             in_channel_num=5, mid_channel_num=32, pool_output_size=4, category_num=2, neighbor_type_list=['A', 'E', 'H']
         )
 

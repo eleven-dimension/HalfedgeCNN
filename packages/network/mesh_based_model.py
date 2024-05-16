@@ -7,9 +7,9 @@ from packages.network.layer import *
 from packages.half_edge.register_neighbor import *
 
 
-class HalfEdgeCNNModel(nn.Module):
+class HalfEdgeCNNMeshModel(nn.Module):
     def __init__(self, in_channel_num, mid_channel_num, pool_output_size, category_num, neighbor_type_list):
-        super(HalfEdgeCNNModel, self).__init__()
+        super(HalfEdgeCNNMeshModel, self).__init__()
 
         self.neighbor_type_list = neighbor_type_list
         self.convs = nn.ModuleList()
