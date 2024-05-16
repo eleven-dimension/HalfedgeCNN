@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
+import os
+
 from packages.half_edge.neighbor import *
 from packages.half_edge.mesh import *
 from packages.network.mesh_based_model import *
@@ -92,3 +94,29 @@ if __name__ == "__main__":
     # after
     print("After training:")
     print(get_mesh_probabilities(model, all_meshes))
+
+    model_path = './packages/model/cone_and_cube_model.pth'
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    model.to('cpu')
+
+    torch.save(model.state_dict(), model_path)
+    
+    print(f"Model saved to {model_path}")
+
+'''
+    all labels: tensor([0, 0, 0, 0, 1, 1, 1, 1], device='cuda:0')
+    Before training:
+    [tensor([0.4960, 0.5040], device='cuda:0'), tensor([0.5016, 0.4984], device='cuda:0'), tensor([0.4979, 0.5021], device='cuda:0'), tensor([0.4933, 0.5067], device='cuda:0'), tensor([0.4875, 0.5125], device='cuda:0'), tensor([0.5018, 0.4982], device='cuda:0'), tensor([0.4984, 0.5016], device='cuda:0'), tensor([0.4937, 0.5063], device='cuda:0')]
+    Epoch 10, Loss: 0.6954051852226257
+    Epoch 20, Loss: 0.43153488636016846
+    Epoch 30, Loss: 0.282850056886673
+    Epoch 40, Loss: 0.19569586217403412
+    Epoch 50, Loss: 0.14265751838684082
+    Epoch 60, Loss: 0.10856987535953522
+    Epoch 70, Loss: 0.08549964427947998
+    Epoch 80, Loss: 0.06918029487133026
+    Epoch 90, Loss: 0.05720406398177147
+    Epoch 100, Loss: 0.04814288765192032
+    After training:
+    [tensor([1.0000e+00, 3.6336e-15], device='cuda:0'), tensor([1.0000e+00, 7.0521e-13], device='cuda:0'), tensor([1.0000e+00, 6.7302e-14], device='cuda:0'), tensor([1.0000e+00, 2.8104e-13], device='cuda:0'), tensor([1.6427e-13, 1.0000e+00], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0')]
+'''
