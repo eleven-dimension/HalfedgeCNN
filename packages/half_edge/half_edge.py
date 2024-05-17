@@ -108,10 +108,12 @@ class Vertex:
         self.exists = True
         self.he = None
 
+        self.valence = 0
+
     
     def __str__(self):
         he_id = self.he.id if self.he else None
-        return f"Vertex {self.id}: exists={self.exists}, position={self.pos}, half_edge={he_id}"
+        return f"Vertex {self.id}: exists={self.exists}, position={self.pos}, half_edge={he_id}, valence={self.valence}"
 
 
 

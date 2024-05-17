@@ -143,6 +143,10 @@ class Mesh:
         for he in self.half_edges:
             he.calc_input_features()
 
+        # Calculating the valence of each vertex
+        for he in self.half_edges:
+            he.O().vertex.valence += 1
+
 
     def convert_mesh_to_obj_format(self):
         if len(self.display_vertices) > 0:
