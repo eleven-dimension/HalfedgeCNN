@@ -129,7 +129,8 @@ class Face:
     
     def __str__(self):
         he_id = self.he.id if self.he else None
-        return f"Face {self.id}: exists={self.exists}, half_edge={he_id}, vertices={self.vertices()}"
+        vertex_ids = [vertex.id for vertex in self.vertex_list]
+        return f"Face {self.id}: exists={self.exists}, half_edge={he_id}, vertices={vertex_ids}"
 
 
 class Edge:
