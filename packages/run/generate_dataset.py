@@ -1,6 +1,6 @@
 import os
 import argparse
-from packages.generate.generate_pyramid import generate_random_shape
+from packages.generate.generate_meshes import generate_random_shape
 
 def generate_shapes(num_cylinders, num_pyramids):
     # Create directories if they don't exist
