@@ -1,2 +1,5 @@
 # Ignore all __pycache__ directories in the project
 **/__pycache__/
+
+packages/obj/dataset/cylinder/
+packages/obj/dataset/pyramid/
