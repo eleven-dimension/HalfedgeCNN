@@ -8,8 +8,7 @@ if __name__ == "__main__":
 
     if mesh.load_obj(filepath):
         mesh.convert_obj_format_to_mesh()
-        mesh.print_mesh_info()
-
+        
         print("------------------------")
         print("heighbor test here:")
         neighbors = get_neighbors_type_A(mesh.half_edges[3])

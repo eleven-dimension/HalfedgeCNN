@@ -45,7 +45,7 @@ if __name__ == "__main__":
         in_channel_num=5, mid_channel_num=64, pool_output_size=16, category_num=2, neighbor_type_list=['H', 'H', 'H', 'H']
     ).to(device)
 
-    model_path = './packages/model/cone_and_cube_model.pth'
+    model_path = './packages/model/cone_and_cube_cnn_model.pth'
     model.load_state_dict(torch.load(model_path))
 
     mesh = Mesh()

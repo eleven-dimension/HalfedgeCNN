@@ -3,6 +3,7 @@ from packages.half_edge.mesh import *
 
 
 if __name__ == "__main__":
+    # cosine angle = 0
     print(
         HalfEdge.angle_between(
             np.array([0, 0, 1]), 

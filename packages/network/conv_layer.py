@@ -9,6 +9,7 @@ from packages.half_edge.register_neighbor import *
 class HalfEdgeConv(nn.Module):
     def __init__(self, in_channels, out_channels, neighbor_type):
         super(HalfEdgeConv, self).__init__()
+        
         self.neighbor_type = neighbor_type
 
         self.neighbor_func_map = register_neighbor_functions('packages.half_edge.neighbor')

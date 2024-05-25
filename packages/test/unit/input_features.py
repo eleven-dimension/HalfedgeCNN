@@ -8,6 +8,4 @@ if __name__ == "__main__":
 
     if mesh.load_obj(filepath):
         mesh.convert_obj_format_to_mesh()
-        mesh.print_mesh_info()
-
         print(mesh.half_edges[1].features)

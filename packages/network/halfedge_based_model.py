@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from packages.half_edge.neighbor import *
-from packages.network.layer import *
+from packages.network.conv_layer import *
 from packages.half_edge.register_neighbor import *
 
 

@@ -7,7 +7,7 @@ import os
 
 from packages.half_edge.neighbor import *
 from packages.half_edge.mesh import *
-from packages.network.mesh_based_model import *
+from packages.network.mesh_based_resnet_model import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -41,7 +41,7 @@ def get_mesh_probabilities(model, all_meshes):
 if __name__ == "__main__":
     set_seed(0)
 
-    model = HalfEdgeCNNMeshModel(
+    model = HalfEdgeResNetMeshModel(
         in_channel_num=5, mid_channel_num=64, pool_output_size=16, category_num=2, neighbor_type_list=['H', 'H', 'H', 'H']
     ).to(device)
     criterion = nn.CrossEntropyLoss()
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     print("Before training:")
     print(get_mesh_probabilities(model, all_meshes))
 
-    for epoch in range(100):
+    for epoch in range(70):
         for mesh, label in zip(all_meshes, all_labels):
             optimizer.zero_grad()
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     print("After training:")
     print(get_mesh_probabilities(model, all_meshes))
 
-    model_path = './packages/model/cone_and_cube_model.pth'
+    model_path = './packages/model/cone_and_cube_resnet_model.pth'
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     model.to('cpu')
 
@@ -106,17 +106,15 @@ if __name__ == "__main__":
 '''
     all labels: tensor([0, 0, 0, 0, 1, 1, 1, 1], device='cuda:0')
     Before training:
-    [tensor([0.4960, 0.5040], device='cuda:0'), tensor([0.5016, 0.4984], device='cuda:0'), tensor([0.4979, 0.5021], device='cuda:0'), tensor([0.4933, 0.5067], device='cuda:0'), tensor([0.4875, 0.5125], device='cuda:0'), tensor([0.5018, 0.4982], device='cuda:0'), tensor([0.4984, 0.5016], device='cuda:0'), tensor([0.4937, 0.5063], device='cuda:0')]
-    Epoch 10, Loss: 0.6954051852226257
-    Epoch 20, Loss: 0.43153488636016846
-    Epoch 30, Loss: 0.282850056886673
-    Epoch 40, Loss: 0.19569586217403412
-    Epoch 50, Loss: 0.14265751838684082
-    Epoch 60, Loss: 0.10856987535953522
-    Epoch 70, Loss: 0.08549964427947998
-    Epoch 80, Loss: 0.06918029487133026
-    Epoch 90, Loss: 0.05720406398177147
-    Epoch 100, Loss: 0.04814288765192032
+    [tensor([0.4650, 0.5350], device='cuda:0'), tensor([0.4861, 0.5139], device='cuda:0'), tensor([0.4757, 0.5243], device='cuda:0'), tensor([0.4337, 0.5663], device='cuda:0'), tensor([0.4891, 0.5109], device='cuda:0'), tensor([0.4542, 0.5458], device='cuda:0'), tensor([0.4729, 0.5271], device='cuda:0'), tensor([0.4886, 0.5114], device='cuda:0')]
+    Epoch 10, Loss: 0.5764193534851074
+    Epoch 20, Loss: 0.37149766087532043
+    Epoch 30, Loss: 0.03880003094673157
+    Epoch 40, Loss: 0.05297886207699776
+    Epoch 50, Loss: 0.043909721076488495
+    Epoch 60, Loss: 0.0030359390657395124
+    Epoch 70, Loss: 0.0007496645557694137
     After training:
-    [tensor([1.0000e+00, 3.6336e-15], device='cuda:0'), tensor([1.0000e+00, 7.0521e-13], device='cuda:0'), tensor([1.0000e+00, 6.7302e-14], device='cuda:0'), tensor([1.0000e+00, 2.8104e-13], device='cuda:0'), tensor([1.6427e-13, 1.0000e+00], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0'), tensor([0.0469, 0.9531], device='cuda:0')]
+    [tensor([1.0000e+00, 7.8276e-24], device='cuda:0'), tensor([0.9903, 0.0097], device='cuda:0'), tensor([1.0000e+00, 7.3916e-12], device='cuda:0'), tensor([1., 0.], device='cuda:0'), tensor([1.0357e-09, 1.0000e+00], device='cuda:0'), tensor([0.0060, 0.9940], device='cuda:0'), tensor([0.0018, 0.9982], device='cuda:0'), tensor([7.3433e-04, 9.9927e-01], device='cuda:0')]
+    Model saved to ./packages/model/cone_and_cube_resnet_model.pth
 '''
