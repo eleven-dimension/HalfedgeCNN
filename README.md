@@ -9,7 +9,7 @@ As is shown in `requirements.txt`.
 
 ### Usage
 #### Binary Classification for Pyramids and Cylinders
-2000 data points, 1800 for training and 200 for validation
+2000 data points per class, 1800 for training and 200 for validation
 ```sh
 python -m packages.test.train.pyramids_and_cylinders_by_cnn
 ```
