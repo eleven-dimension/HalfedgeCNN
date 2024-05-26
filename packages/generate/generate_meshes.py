@@ -2,11 +2,11 @@ import numpy as np
 from scipy.spatial import ConvexHull, Delaunay
 
 MIN_BASE_POINTS = 3
-MAX_BASE_POINTS = 8
+MAX_BASE_POINTS = 30
 BASE_AREA_SIZE = 10
 MIN_APEX_HEIGHT = 1
 MAX_APEX_HEIGHT = 15
-VALID_SHAPE_AREA_THRESHOLD = 2
+VALID_SHAPE_AREA_THRESHOLD = 3
 
 def is_shape_valid(points):
     # Calculate the convex hull of the points
@@ -15,6 +15,27 @@ def is_shape_valid(points):
     area = hull.volume
     # Check if the area is too small (indicating points are nearly collinear)
     return area > VALID_SHAPE_AREA_THRESHOLD
+
+
+def generate_random_rectangle(square_max):
+    x1 = np.random.uniform(0, square_max)
+    y1 = np.random.uniform(0, square_max)
+
+    max_width = square_max - x1
+    max_height = square_max - y1
+    
+    width = np.random.uniform(0, max_width)
+    height = np.random.uniform(0, max_height)
+
+    points = np.array([
+        [x1, y1],
+        [x1 + width, y1],
+        [x1 + width, y1 + height],
+        [x1, y1 + height]
+    ])
+
+    return points
+
 
 def generate_shape(base_points, shape_type='pyramid'):
     vertices = []
@@ -81,8 +102,12 @@ def write_obj(filename, vertices, faces):
 
 def generate_random_shape(filename, shape_type='pyramid'):
     while True:
-        num_base_points = np.random.randint(MIN_BASE_POINTS, MAX_BASE_POINTS + 1)
-        base_points = np.random.rand(num_base_points, 2) * BASE_AREA_SIZE
+        if np.random.rand() <= 1/3:
+            base_points = generate_random_rectangle(BASE_AREA_SIZE)
+            print("rectangle")
+        else:
+            num_base_points = np.random.randint(MIN_BASE_POINTS, MAX_BASE_POINTS + 1)
+            base_points = np.random.rand(num_base_points, 2) * BASE_AREA_SIZE
         if is_shape_valid(base_points):
             break
     vertices, faces = generate_shape(base_points, shape_type)
