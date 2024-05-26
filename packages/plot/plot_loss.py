@@ -12,8 +12,10 @@ plt.xlabel('data point index')
 plt.ylabel('loss')
 plt.legend()
 plt.grid(False)
-plt.show()
+
 
 output_dir = 'packages/plot'
 os.makedirs(output_dir, exist_ok=True)
 plt.savefig(os.path.join(output_dir, 'training_loss_plot.png'))
+
+plt.show()
