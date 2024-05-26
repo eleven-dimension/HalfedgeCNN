@@ -21,3 +21,7 @@ if __name__ == "__main__":
             out = model(x, mesh.half_edges)
 
         print(out.shape) # 2
+
+        print(out)
+        _, predicted = torch.max(out, 0)
+        print(predicted.item())

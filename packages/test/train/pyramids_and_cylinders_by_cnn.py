@@ -48,17 +48,20 @@ def load_meshes(directory, label, limit):
 if __name__ == "__main__":
     set_seed(0)
     
-    TRAIN_SIZE_PER_CLASS = 90
-    VALIDATION_SIZE_PER_CLASS = 10
-    TOTAL_SIZE_PER_CLASS = 100
+    TRAIN_SIZE_PER_CLASS = 1800
+    VALIDATION_SIZE_PER_CLASS = 200
+    TOTAL_SIZE_PER_CLASS = 2000
     
-    EPOCH_NUM = 5
+    EPOCH_NUM = 1
+    
+    MIN_IMPROVEMENT = 1e-2
+    PATIENCE = 1
 
     model = HalfEdgeCNNMeshModel(
-        in_channel_num=5, mid_channel_num=128, pool_output_size=16, category_num=2, neighbor_type_list=['H', 'H', 'H', 'H']
+        in_channel_num=5, mid_channel_num=16, pool_output_size=8, category_num=2, neighbor_type_list=['H', 'H', 'H', 'H']
     ).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
 
     print("Begin loading meshes...")
     # Load datasets
@@ -74,33 +77,56 @@ if __name__ == "__main__":
     train_meshes = train_cylinder_meshes + train_pyramid_meshes
     val_meshes = val_cylinder_meshes + val_pyramid_meshes
 
+    # 0 for cylinder, 1 for pyramid
     train_labels = torch.tensor([0] * TRAIN_SIZE_PER_CLASS + [1] * TRAIN_SIZE_PER_CLASS).to(device)
     val_labels = torch.tensor([0] * VALIDATION_SIZE_PER_CLASS + [1] * VALIDATION_SIZE_PER_CLASS).to(device)
 
-
+    # print("----------------")
+    # print(len(train_meshes))
+    # print(len(val_meshes))
+    # print(len(train_labels))
+    # print(len(val_labels))
+    
     print("Begin training...")
     
     epoch_losses = []
+    validation_acc_list = []
+    best_loss = np.inf
     use_tqdm = True
+    
+    # Validation before training
+    model.eval()
+    val_predictions = []
+    with torch.no_grad():
+        for mesh in val_meshes:
+            x = half_edges_to_tensor(mesh.half_edges)
+            outputs = model(x, mesh.half_edges)
+            _, predicted = torch.max(outputs, 0)
+            val_predictions.append(predicted.item())
+
+    val_accuracy = accuracy_score(val_labels.cpu(), val_predictions)
+    validation_acc_list.append(val_accuracy)
+    print(f'Validation Accuracy Before Training: {val_accuracy * 100:.2f}%')
     
     # Training phase
     for epoch in range(EPOCH_NUM):
         model.train()
         permutation = torch.randperm(len(train_meshes))
-        train_meshes = [train_meshes[i] for i in permutation]
-        train_labels = train_labels[permutation]
+        current_epoch_train_meshes = [train_meshes[i] for i in permutation]
+        current_epoch_train_labels = train_labels[permutation]
         
+        # print(train_meshes)
         # print(train_labels)
 
         epoch_loss = 0
         
         if use_tqdm:
-            pbar = tqdm(total=len(train_meshes), desc=f'Epoch {epoch + 1}')
+            pbar = tqdm(total=len(current_epoch_train_meshes), desc=f'Epoch {epoch + 1}')
         else:
             pbar = None
         
         mesh_cnt = 0
-        for mesh, label in zip(train_meshes, train_labels):
+        for mesh, label in zip(current_epoch_train_meshes, current_epoch_train_labels):
             optimizer.zero_grad()
 
             x = half_edges_to_tensor(mesh.half_edges)
@@ -116,6 +142,8 @@ if __name__ == "__main__":
             epoch_loss += loss.item()
             mesh_cnt += 1
             
+            epoch_losses.append(epoch_loss / mesh_cnt)
+            
             if use_tqdm:
                 pbar.update(1)
                 pbar.set_postfix(loss=epoch_loss / mesh_cnt)
@@ -123,22 +151,32 @@ if __name__ == "__main__":
         if use_tqdm:
             pbar.close()
             
-        epoch_losses.append(epoch_loss / len(train_meshes))
         if (epoch + 1) % 10 == 0:
             print(f'Epoch {epoch + 1}, Loss: {epoch_loss / len(train_meshes)}')
+        
+        if epoch_loss < best_loss - MIN_IMPROVEMENT:
+            best_loss = epoch_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
 
-    # Validation phase
-    model.eval()
-    val_predictions = []
-    with torch.no_grad():
-        for mesh in val_meshes:
-            x = half_edges_to_tensor(mesh.half_edges)
-            outputs = model(x, mesh.half_edges)
-            _, predicted = torch.max(outputs, 0)
-            val_predictions.append(predicted.item())
+        if patience_counter >= PATIENCE:
+            print(f'Early stopping at epoch {epoch + 1}, Loss: {epoch_loss / len(train_meshes)}')
+            break
 
-    val_accuracy = accuracy_score(val_labels.cpu(), val_predictions)
-    print(f'Validation Accuracy: {val_accuracy * 100:.2f}%')
+        # Validation phase
+        model.eval()
+        val_predictions = []
+        with torch.no_grad():
+            for mesh in val_meshes:
+                x = half_edges_to_tensor(mesh.half_edges)
+                outputs = model(x, mesh.half_edges)
+                _, predicted = torch.max(outputs, 0)
+                val_predictions.append(predicted.item())
+
+        val_accuracy = accuracy_score(val_labels.cpu(), val_predictions)
+        validation_acc_list.append(val_accuracy)
+        print(f'Validation Accuracy: {val_accuracy * 100:.2f}%')
 
     model_path = './packages/model/cylinder_and_pyramid_cnn_model.pth'
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
@@ -155,3 +193,11 @@ if __name__ == "__main__":
             f.write(f"{loss}\n")
     
     print(f"Loss data saved to {loss_path}")
+    
+    # Save the epoch validation acc to a file
+    acc_path = './packages/model/epoch_acc.txt'
+    with open(acc_path, 'w') as f:
+        for acc in validation_acc_list:
+            f.write(f"{acc}\n")
+    
+    print(f"Acc data saved to {acc_path}")
