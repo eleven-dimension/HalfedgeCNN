@@ -187,7 +187,7 @@ if __name__ == "__main__":
     print(f"Model saved to {model_path}")
     
     # Save the epoch loss data to a file
-    loss_path = './packages/model/epoch_losses.txt'
+    loss_path = './packages/model/epoch_losses_cnn.txt'
     with open(loss_path, 'w') as f:
         for loss in epoch_losses:
             f.write(f"{loss}\n")
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     print(f"Loss data saved to {loss_path}")
     
     # Save the epoch validation acc to a file
-    acc_path = './packages/model/epoch_acc.txt'
+    acc_path = './packages/model/epoch_acc_cnn.txt'
     with open(acc_path, 'w') as f:
         for acc in validation_acc_list:
             f.write(f"{acc}\n")
