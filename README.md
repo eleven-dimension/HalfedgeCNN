@@ -13,6 +13,10 @@ As is shown in `requirements.txt`.
 ```sh
 python -m packages.test.train.pyramids_and_cylinders_by_cnn
 ```
+and
+```sh
+python -m packages.test.train.pyramids_and_cylinders_by_resnet
+```
 #### Simple Edge-based Model Test
 To mark side edges of a pyramid.
 ```sh
